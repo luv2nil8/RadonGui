@@ -36,8 +36,11 @@
             this.OpenFileButton = new System.Windows.Forms.Button();
             this.radonDataTextBox = new System.Windows.Forms.TextBox();
             this.ClientDataTab = new System.Windows.Forms.TabPage();
+            this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.dateSetLabel = new System.Windows.Forms.Label();
+            this.ClientInfoErrorLabel = new System.Windows.Forms.Label();
             this.monitorNumberLabel = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.monitorNumber = new System.Windows.Forms.NumericUpDown();
             this.getISNDataFromOIDButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.getISNDataFromOIDTextbox = new System.Windows.Forms.TextBox();
@@ -66,7 +69,7 @@
             this.DataEntryTabs.SuspendLayout();
             this.RadonDataTab.SuspendLayout();
             this.ClientDataTab.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monitorNumber)).BeginInit();
             this.ISNDataTab.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -138,6 +141,7 @@
             this.OpenFileButton.TabIndex = 6;
             this.OpenFileButton.Text = "Open .txt File";
             this.OpenFileButton.UseVisualStyleBackColor = true;
+            this.OpenFileButton.Click += new System.EventHandler(this.OpenFileButton_Click);
             // 
             // radonDataTextBox
             // 
@@ -146,18 +150,21 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.radonDataTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.radonDataTextBox.Location = new System.Drawing.Point(-4, -3);
+            this.radonDataTextBox.Location = new System.Drawing.Point(0, 0);
             this.radonDataTextBox.Multiline = true;
             this.radonDataTextBox.Name = "radonDataTextBox";
             this.radonDataTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.radonDataTextBox.Size = new System.Drawing.Size(275, 268);
+            this.radonDataTextBox.Size = new System.Drawing.Size(271, 265);
             this.radonDataTextBox.TabIndex = 5;
             // 
             // ClientDataTab
             // 
             this.ClientDataTab.BackColor = System.Drawing.SystemColors.ButtonFace;
+            this.ClientDataTab.Controls.Add(this.dateTimePicker);
+            this.ClientDataTab.Controls.Add(this.dateSetLabel);
+            this.ClientDataTab.Controls.Add(this.ClientInfoErrorLabel);
             this.ClientDataTab.Controls.Add(this.monitorNumberLabel);
-            this.ClientDataTab.Controls.Add(this.numericUpDown1);
+            this.ClientDataTab.Controls.Add(this.monitorNumber);
             this.ClientDataTab.Controls.Add(this.getISNDataFromOIDButton);
             this.ClientDataTab.Controls.Add(this.label1);
             this.ClientDataTab.Controls.Add(this.getISNDataFromOIDTextbox);
@@ -177,6 +184,34 @@
             this.ClientDataTab.TabIndex = 1;
             this.ClientDataTab.Text = "Client Info";
             // 
+            // dateTimePicker
+            // 
+            this.dateTimePicker.CustomFormat = "ddd, MMMd, yyyy";
+            this.dateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dateTimePicker.Location = new System.Drawing.Point(205, 198);
+            this.dateTimePicker.Name = "dateTimePicker";
+            this.dateTimePicker.Size = new System.Drawing.Size(146, 20);
+            this.dateTimePicker.TabIndex = 28;
+            this.dateTimePicker.Value = new System.DateTime(2018, 8, 8, 13, 16, 55, 892);
+            // 
+            // dateSetLabel
+            // 
+            this.dateSetLabel.AutoSize = true;
+            this.dateSetLabel.Location = new System.Drawing.Point(205, 180);
+            this.dateSetLabel.Name = "dateSetLabel";
+            this.dateSetLabel.Size = new System.Drawing.Size(54, 15);
+            this.dateSetLabel.TabIndex = 27;
+            this.dateSetLabel.Text = "Date Set";
+            // 
+            // ClientInfoErrorLabel
+            // 
+            this.ClientInfoErrorLabel.AutoSize = true;
+            this.ClientInfoErrorLabel.ForeColor = System.Drawing.Color.Red;
+            this.ClientInfoErrorLabel.Location = new System.Drawing.Point(61, 87);
+            this.ClientInfoErrorLabel.Name = "ClientInfoErrorLabel";
+            this.ClientInfoErrorLabel.Size = new System.Drawing.Size(0, 15);
+            this.ClientInfoErrorLabel.TabIndex = 26;
+            // 
             // monitorNumberLabel
             // 
             this.monitorNumberLabel.AutoSize = true;
@@ -186,12 +221,12 @@
             this.monitorNumberLabel.TabIndex = 25;
             this.monitorNumberLabel.Text = "Monitor #";
             // 
-            // numericUpDown1
+            // monitorNumber
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(245, 68);
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(46, 20);
-            this.numericUpDown1.TabIndex = 24;
+            this.monitorNumber.Location = new System.Drawing.Point(245, 68);
+            this.monitorNumber.Name = "monitorNumber";
+            this.monitorNumber.Size = new System.Drawing.Size(46, 20);
+            this.monitorNumber.TabIndex = 24;
             // 
             // getISNDataFromOIDButton
             // 
@@ -208,9 +243,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(61, 49);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(140, 15);
+            this.label1.Size = new System.Drawing.Size(133, 15);
             this.label1.TabIndex = 20;
-            this.label1.Text = "Order ID (OID From ISN)";
+            this.label1.Text = "HomeGuage Report ID";
             // 
             // getISNDataFromOIDTextbox
             // 
@@ -222,7 +257,7 @@
             // timeSetLabel
             // 
             this.timeSetLabel.AutoSize = true;
-            this.timeSetLabel.Location = new System.Drawing.Point(99, 102);
+            this.timeSetLabel.Location = new System.Drawing.Point(202, 117);
             this.timeSetLabel.Name = "timeSetLabel";
             this.timeSetLabel.Size = new System.Drawing.Size(56, 15);
             this.timeSetLabel.TabIndex = 9;
@@ -232,7 +267,7 @@
             // 
             this.colonLabel.AutoSize = true;
             this.colonLabel.Enabled = false;
-            this.colonLabel.Location = new System.Drawing.Point(143, 123);
+            this.colonLabel.Location = new System.Drawing.Point(248, 138);
             this.colonLabel.Name = "colonLabel";
             this.colonLabel.Size = new System.Drawing.Size(10, 15);
             this.colonLabel.TabIndex = 8;
@@ -240,7 +275,7 @@
             // 
             // AMPMButton
             // 
-            this.AMPMButton.Location = new System.Drawing.Point(223, 120);
+            this.AMPMButton.Location = new System.Drawing.Point(312, 135);
             this.AMPMButton.Name = "AMPMButton";
             this.AMPMButton.Size = new System.Drawing.Size(39, 23);
             this.AMPMButton.TabIndex = 7;
@@ -257,7 +292,7 @@
             "15",
             "30",
             "45"});
-            this.timeSetMinuteComboBox.Location = new System.Drawing.Point(157, 120);
+            this.timeSetMinuteComboBox.Location = new System.Drawing.Point(260, 135);
             this.timeSetMinuteComboBox.Name = "timeSetMinuteComboBox";
             this.timeSetMinuteComboBox.Size = new System.Drawing.Size(38, 21);
             this.timeSetMinuteComboBox.TabIndex = 6;
@@ -279,7 +314,7 @@
             "10",
             "11",
             "12"});
-            this.timeSetHourComboBox.Location = new System.Drawing.Point(99, 120);
+            this.timeSetHourComboBox.Location = new System.Drawing.Point(205, 135);
             this.timeSetHourComboBox.MaxDropDownItems = 12;
             this.timeSetHourComboBox.Name = "timeSetHourComboBox";
             this.timeSetHourComboBox.Size = new System.Drawing.Size(38, 21);
@@ -287,7 +322,7 @@
             // 
             // inspectorNameTextBox
             // 
-            this.inspectorNameTextBox.Location = new System.Drawing.Point(99, 237);
+            this.inspectorNameTextBox.Location = new System.Drawing.Point(20, 199);
             this.inspectorNameTextBox.Name = "inspectorNameTextBox";
             this.inspectorNameTextBox.Size = new System.Drawing.Size(163, 20);
             this.inspectorNameTextBox.TabIndex = 4;
@@ -295,7 +330,7 @@
             // inspectorNameTextBoxLabel
             // 
             this.inspectorNameTextBoxLabel.AutoSize = true;
-            this.inspectorNameTextBoxLabel.Location = new System.Drawing.Point(99, 219);
+            this.inspectorNameTextBoxLabel.Location = new System.Drawing.Point(20, 181);
             this.inspectorNameTextBoxLabel.Name = "inspectorNameTextBoxLabel";
             this.inspectorNameTextBoxLabel.Size = new System.Drawing.Size(94, 15);
             this.inspectorNameTextBoxLabel.TabIndex = 3;
@@ -304,7 +339,7 @@
             // addressTextBoxLabel
             // 
             this.addressTextBoxLabel.AutoSize = true;
-            this.addressTextBoxLabel.Location = new System.Drawing.Point(99, 155);
+            this.addressTextBoxLabel.Location = new System.Drawing.Point(20, 117);
             this.addressTextBoxLabel.Name = "addressTextBoxLabel";
             this.addressTextBoxLabel.Size = new System.Drawing.Size(51, 15);
             this.addressTextBoxLabel.TabIndex = 2;
@@ -313,7 +348,7 @@
             // addressTextBox
             // 
             this.addressTextBox.AcceptsReturn = true;
-            this.addressTextBox.Location = new System.Drawing.Point(99, 173);
+            this.addressTextBox.Location = new System.Drawing.Point(20, 135);
             this.addressTextBox.Multiline = true;
             this.addressTextBox.Name = "addressTextBox";
             this.addressTextBox.Size = new System.Drawing.Size(163, 33);
@@ -465,7 +500,7 @@
             this.RadonDataTab.PerformLayout();
             this.ClientDataTab.ResumeLayout(false);
             this.ClientDataTab.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.monitorNumber)).EndInit();
             this.ISNDataTab.ResumeLayout(false);
             this.ISNDataTab.PerformLayout();
             this.ResumeLayout(false);
@@ -504,10 +539,13 @@
         private System.Windows.Forms.TextBox addressTextBox;
         private System.Windows.Forms.Label timeSetLabel;
         private System.Windows.Forms.Label monitorNumberLabel;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.NumericUpDown monitorNumber;
         private System.Windows.Forms.Button getISNDataFromOIDButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox getISNDataFromOIDTextbox;
+        private System.Windows.Forms.DateTimePicker dateTimePicker;
+        private System.Windows.Forms.Label dateSetLabel;
+        private System.Windows.Forms.Label ClientInfoErrorLabel;
     }
 }
 

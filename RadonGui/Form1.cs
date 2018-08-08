@@ -1,5 +1,4 @@
-﻿using OpenQA.Selenium.Chrome;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,6 +7,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -106,35 +106,69 @@ namespace RadonGui
 
         private void SubmitDataButton_Click(object sender, EventArgs e)
         {
-            String html = null;
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            String html = System.IO.File.ReadAllText(@"C:\Users\hunte\Documents\templateAlpha.txt");
 
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            if (Environment.OSVersion.Version.Major >= 6)
+            List<string> radonData = new List<string>();
+            foreach (Match match in Regex.Matches(radonDataTextBox.Text, "[0-9]+\\.[0-9]+"))
             {
-                path = Directory.GetParent(path).ToString();
+                Console.WriteLine(match.ToString());
+                radonData.Add(match.ToString());
             }
-
-            openFileDialog1.InitialDirectory = path;
-            openFileDialog1.Filter = "html files (*.html)|*.html";
-            openFileDialog1.FilterIndex = 2;
-            openFileDialog1.RestoreDirectory = true;
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            Console.WriteLine(radonData.Count());
+            if (radonData.Count() < 50)
             {
-                try
-                {
-                    if ((html = System.IO.File.ReadAllText(openFileDialog1.FileName)) == null)
-                    {
-                        DialogResult = DialogResult.Retry;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
-                }
+                MessageBox.Show("Only " + (radonData.Count - 2) + " hours have been recorded.");
+                return;
             }
+            radonData.RemoveRange(48, radonData.Count()-48);
+            Console.WriteLine(radonData.Count());
 
+            html = Regex.Replace(html, "%startDate%", dateTimePicker.Value.ToShortDateString());
+
+            html = Regex.Replace(html, "%startTime%", string.Format("{0}:{1} {2}", timeSetHourComboBox.Text, timeSetMinuteComboBox.Text, AMPMButton.Text));
+
+            html = Regex.Replace(html, "%endDate%", DateTime.Now.ToShortTimeString());
+
+            html = Regex.Replace(html, "%endTime%", DateTime.Now.ToShortDateString());
+
+            string location = addressTextBox.Text;
+            location = Regex.Replace(location, Environment.NewLine, "</br>");
+
+            html = Regex.Replace(html, "%location%", location);
+
+            html = Regex.Replace(html, "%serial%", monitorNumber.Value.ToString());
+
+            html = Regex.Replace(html, "%inspector%", inspectorNameTextBox.Text);
+
+            double average = 0;
+            double epaAverage = 0;
+            for (int dataToAverage = 0; dataToAverage < 48; dataToAverage++)
+            {
+                if (dataToAverage > 3) epaAverage += System.Convert.ToDouble(radonData[dataToAverage]);
+                average += System.Convert.ToDouble(radonData[dataToAverage]);
+            }
+            average = average / radonData.Count();
+            epaAverage = epaAverage / (radonData.Count() - 4);
+            html  = Regex.Replace(html, "%average%", String.Format("{0:F2}", average));
+            html  = Regex.Replace(html, "%EPAAverage%", String.Format("{0:F2}", epaAverage));
+         
+
+            string rawData ="";
+            string rawDataArray ="";
+            int itemLimiter = 1;
+            foreach (string item in radonData)
+            {
+                if (itemLimiter >= 49) break;
+                rawData += "<div class=\"col\">" + item + "</div>";
+                if (itemLimiter % 6 == 0) rawData +="<div class=\"w-100\"></div>";
+                rawDataArray += item + ",";
+                itemLimiter++;
+            }
+            rawDataArray.Trim(',');//get rid of the last comma
+            html = Regex.Replace(html, "%rawData%", rawData);
+            html = Regex.Replace(html, "%rawDataArray%", rawDataArray);
+            Console.WriteLine(html);
+            //TODO: Print to PDF File with puppeteer
 
         }
 
@@ -167,6 +201,7 @@ namespace RadonGui
                 {
                     if ((text = System.IO.File.ReadAllText(openFileDialog1.FileName)) != null)
                     {
+                        Console.WriteLine(openFileDialog1.FileName);
                             radonDataTextBox.Text= text;
                     }
                 }
@@ -186,12 +221,23 @@ namespace RadonGui
 
         private async void getISNDataFromOIDButton_ClickAsync(object sender, EventArgs e)
         {
-            Order order = await isnWebCall.GetOrderByOID(getISNDataFromOIDTextbox.Text);
-            addressTextBox.Text =string.Format("{0}{3}{1}, {2}", order.address1, order.city, order.stateabbreviation, Environment.NewLine);
-            DateTime timeSet = order.datetime;
-            timeSetMinuteComboBox.Text = (timeSet.Minute - (timeSet.Minute % 5)).ToString("D2");
-            timeSetHourComboBox.Text = timeSet.Hour.ToString();
-            AMPMButton.Text = timeSet.ToString("tt", CultureInfo.InvariantCulture); ;
+
+            try
+            {
+                Order order = await isnWebCall.GetOrderByOID(getISNDataFromOIDTextbox.Text);
+                ClientInfoErrorLabel.Text = "";
+                dateTimePicker.Value = order.datetime;
+                addressTextBox.Text = string.Format("{0}{3}{1}, {2}", order.address1, order.city, order.stateabbreviation, Environment.NewLine);
+                DateTime timeSet = order.datetime;
+                timeSetMinuteComboBox.Text = (timeSet.Minute - (timeSet.Minute % 5)).ToString("D2");
+                timeSetHourComboBox.Text = timeSet.Hour.ToString();
+                AMPMButton.Text = timeSet.ToString("tt", CultureInfo.InvariantCulture); ;
+            }
+            catch (Exception)
+            {
+                ClientInfoErrorLabel.Text = "Not Found on your ISN";
+                Console.WriteLine("Not Found");
+            }
 
 
 

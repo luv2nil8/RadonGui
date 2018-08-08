@@ -26,8 +26,11 @@ namespace RadonGui
         public ISNWebCall()
         {
             company = Properties.Settings.Default.company;
+            Console.WriteLine(company);
             key = Properties.Settings.Default.key;
+            Console.WriteLine(key);
             secretKey = Properties.Settings.Default.secretkey;
+            Console.WriteLine(secretKey);
 
 
 
@@ -83,24 +86,33 @@ namespace RadonGui
                 System.Text.ASCIIEncoding.ASCII.GetBytes(
                     string.Format("{0}:{1}", key, secretKey))));
 
-            JObject response = JsonConvert.DeserializeObject<JObject>
-                (
-                    (this.GetAsync("me/").Result)
-                    .Content.ReadAsStringAsync().Result
-                );
-
-            //Console.WriteLine("Validation: "+response);
-
-            if (response.ToObject<Response>().status=="ok")
+            try
             {
-                me = response["me"].ToObject<Me>();
-                return true;
-            }
-            else
-            {
+                HttpResponseMessage _result = GetAsync("me/").Result;
+                if (_result.IsSuccessStatusCode)
+                {
+                    JObject response = JsonConvert.DeserializeObject<JObject>
+                        (
+                            (_result)
+                            .Content.ReadAsStringAsync().Result
+                        );
+
+                    Console.WriteLine("Validation: "+response);
+
+                    if (response.ToObject<Response>().status=="ok")
+                    {
+                        me = response["me"].ToObject<Me>();
+                        return true;
+                    }
+                }
                 return false;
             }
+            catch (Exception)
+            {
 
+                Console.WriteLine("Http Response failed");
+                return false;
+            }
         }
     }
 
